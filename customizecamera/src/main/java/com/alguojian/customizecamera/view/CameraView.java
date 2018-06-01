@@ -11,17 +11,19 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.alguojian.customizecamera.InterFace.PreViewImageViewListener;
 import com.alguojian.customizecamera.InterFace.PreviewFrameListener;
-import com.alguojian.customizecamera.InterFace.WaterImageListener;
 import com.alguojian.customizecamera.R;
 import com.alguojian.customizecamera.utils.CUtilts;
 import com.alguojian.customizecamera.utils.CameraHelper;
 import com.alguojian.customizecamera.utils.CameraUtils;
 
 /**
- * Created by Bert on 2017/5/5.
+ * camera操作工具
+ *
+ * @author alguojian
+ * @date 2018.06.01
  */
-
 public class CameraView extends FrameLayout {
 
     public static int CAMERA_BACK = 0;
@@ -49,7 +51,7 @@ public class CameraView extends FrameLayout {
 
     private void initView(Context context) {
         rootView = View.inflate(context, R.layout.layout_camera_view, this);
-        sfv_camera_view = (SurfaceView) rootView.findViewById(R.id.sfv_camera_view);
+        sfv_camera_view = rootView.findViewById(R.id.sfv_camera_view);
     }
 
     /**
@@ -72,7 +74,6 @@ public class CameraView extends FrameLayout {
         if (cameraIsOpen()) {
             CameraUtils.getInstance().closeCamera(sfv_camera_view, mActivity);
         }
-
     }
 
     private boolean cameraIsOpen() {
@@ -111,55 +112,11 @@ public class CameraView extends FrameLayout {
     /**
      * 拍照
      *
-     * @param ImgPath
      * @return
      */
-    public void takePhoto(final Context context, final String ImgPath) {
-        CameraHelper.getInstance().takePhoto(new CameraHelper.takeSuccess() {
-            @Override
-            public void success(Bitmap mBitmap) {
-                System.out.println("----------"+mBitmap.toString());
-                CUtilts.getInstance().saveBitmap(context, mBitmap, ImgPath);
-            }
-        });
-    }
-
-    /**
-     * 拍照并添加水印
-     *
-     * @param waterMask
-     * @param paddingLeft
-     * @param paddingTop
-     * @return
-     */
-    public void takePhotoAddWaterMask(final Bitmap waterMask, final int paddingLeft, final int paddingTop, final String
-            savePath) {
-        takePhotoAddWaterMask(waterMask, paddingLeft, paddingTop, new WaterImageListener() {
-            @Override
-            public void Success(Bitmap mBitmap) {
-                CUtilts.getInstance().saveBitmap(null,mBitmap, savePath);
-            }
-        });
-    }
-
-    /**
-     * 拍照并添加水印
-     *
-     * @param waterMask
-     * @param paddingLeft
-     * @param paddingTop
-     * @return
-     */
-    public void takePhotoAddWaterMask(final Bitmap waterMask, final int paddingLeft, final int paddingTop,
-                                      final WaterImageListener mWaterImageListener) {
-        CameraHelper.getInstance().takePhoto(new CameraHelper.takeSuccess() {
-            @Override
-            public void success(Bitmap mBitmap) {
-                waterMaskBitmap = CUtilts.getInstance().createWaterMaskBitmap(mBitmap, waterMask, paddingLeft, paddingTop);
-                mWaterImageListener.Success(waterMaskBitmap);
-            }
-        });
-
+    public void takePhoto(PreViewImageViewListener preViewImageViewListener) {
+        CameraHelper.getInstance().takePhoto(mBitmap ->
+                CUtilts.saveBitmap(mBitmap,preViewImageViewListener));
     }
 
     /**

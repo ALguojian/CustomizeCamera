@@ -17,25 +17,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Bert on 2017/2/21.
+ * 拍照工具类
+ *
+ * @author alguojian
+ * @date 2018.06.01
  */
 public class CameraHelper {
+    private static final String TAG = "CameraHelper";
+    public static int CAMERA_BACK = 0;
+    public static int CAMERA_FRONT = 1;
     private static CameraHelper instance = null;
     private Camera mCamera;
     private String camResolution;
     private String camPicResolution;
     private float proportion = 0.f;
-    private static final String TAG = "CameraHelper";
-    public static int CAMERA_BACK = 0;
-    public static int CAMERA_FRONT = 1;
     private int current_camrea = CAMERA_BACK;
-
-    public void setmPreviewFrameListener(PreviewFrameListener mPreviewFrameListener) {
-        this.mPreviewFrameListener = mPreviewFrameListener;
-    }
-
     private PreviewFrameListener mPreviewFrameListener;
-
 
     public static CameraHelper getInstance() {
         if (instance == null) {
@@ -44,6 +41,9 @@ public class CameraHelper {
         return instance;
     }
 
+    public void setmPreviewFrameListener(PreviewFrameListener mPreviewFrameListener) {
+        this.mPreviewFrameListener = mPreviewFrameListener;
+    }
 
     /**
      * 打开或者关闭摄像头
@@ -56,58 +56,55 @@ public class CameraHelper {
     public void operationCamera(boolean open, Activity activity, SurfaceView sv, SurfaceHolder mSurfaceholder, int
             back) {
 
-        if(Camera.getNumberOfCameras() >1){
+        if (Camera.getNumberOfCameras() > 1) {
             current_camrea = back;
-        }else {
+        } else {
             current_camrea = Camera.CameraInfo.CAMERA_FACING_BACK;
-            Log.e(TAG, "This phone only have one camera" );
+            Log.e(TAG, "This phone only have one camera");
         }
         if (open) {
             try {
-                if(current_camrea == 0){
+                if (current_camrea == 0) {
                     mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
-                }else {
+                } else {
                     mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
                 }
 //
 //                setCameraDisplayOrientation(activity, back,
 //                        mCamera);
                 Camera.Parameters parameters = mCamera.getParameters();
-                if(current_camrea == CAMERA_BACK){
+                if (current_camrea == CAMERA_BACK) {
                     parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
                 }
-                    calculateRatio(activity);
-                    calculatePicRatio(activity);
-                    String[] xes = camResolution.split("x");
-                    if(Integer.valueOf(xes[0]) > Integer.valueOf(xes[1])){
-                        parameters.setPreviewSize(Integer.valueOf(xes[0]) , Integer.valueOf(xes[1]));
-                    }else {
-                        parameters.setPreviewSize(Integer.valueOf(xes[1]) , Integer.valueOf(xes[0]));
-                    }
-                    String[] pes = camPicResolution.split("x");
-                    if(Integer.valueOf(pes[0]) > Integer.valueOf(pes[1])){
-                        parameters.setPictureSize(Integer.valueOf(pes[0]) , Integer.valueOf(pes[1]));
-                    }else {
-                        parameters.setPictureSize(Integer.valueOf(pes[1]) , Integer.valueOf(pes[0]));
-                    }
+                calculateRatio(activity);
+                calculatePicRatio(activity);
+                String[] xes = camResolution.split("x");
+                if (Integer.valueOf(xes[0]) > Integer.valueOf(xes[1])) {
+                    parameters.setPreviewSize(Integer.valueOf(xes[0]), Integer.valueOf(xes[1]));
+                } else {
+                    parameters.setPreviewSize(Integer.valueOf(xes[1]), Integer.valueOf(xes[0]));
+                }
+                String[] pes = camPicResolution.split("x");
+                if (Integer.valueOf(pes[0]) > Integer.valueOf(pes[1])) {
+                    parameters.setPictureSize(Integer.valueOf(pes[0]), Integer.valueOf(pes[1]));
+                } else {
+                    parameters.setPictureSize(Integer.valueOf(pes[1]), Integer.valueOf(pes[0]));
+                }
                 mCamera.setParameters(parameters);
                 mCamera.setPreviewDisplay(mSurfaceholder);
                 mCamera.setDisplayOrientation(90);
                 mCamera.startPreview();
 
-                mCamera.setPreviewCallback(new Camera.PreviewCallback() {
-                    @Override
-                    public void onPreviewFrame(byte[] data, Camera camera) {
-                        if(mPreviewFrameListener != null){
-                            mPreviewFrameListener.onPreviewFrameListener(data,camera);
-                        }
+                mCamera.setPreviewCallback((data, camera) -> {
+                    if (mPreviewFrameListener != null) {
+                        mPreviewFrameListener.onPreviewFrameListener(data, camera);
                     }
                 });
 
             } catch (Exception e) {
                 e.printStackTrace();
                 sv.setBackgroundColor(Color.BLACK);
-                Log.e(TAG, "open camera error："+e.toString() );
+                Log.e(TAG, "open camera error：" + e.toString());
             }
         } else {
             if (mCamera != null) {
@@ -122,51 +119,6 @@ public class CameraHelper {
 
     }
 
-
-    /**
-     * 旋转摄像头方向
-     *
-     * @param activity
-     * @param cameraId
-     * @param camera
-     */
-    private void setCameraDisplayOrientation(Activity activity, int cameraId, Camera camera) {
-        Camera.CameraInfo info = new Camera.CameraInfo();
-        Camera.getCameraInfo(cameraId, info);
-        int degrees = getDisplayRotation(activity);
-        int result;
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            result = (info.orientation + degrees) % 360;
-            result = (360 - result) % 360; // compensate the mirror
-        } else { // back-facing
-            result = (info.orientation - degrees + 360) % 360;
-        }
-        camera.setDisplayOrientation(result);
-    }
-
-
-    /**
-     * 获得摄像头方向
-     *
-     * @param activity
-     * @return
-     */
-    private int getDisplayRotation(Activity activity) {
-        int rotation = activity.getWindowManager().getDefaultDisplay()
-                .getRotation();
-        switch (rotation) {
-            case Surface.ROTATION_0:
-                return 0;
-            case Surface.ROTATION_90:
-                return 90;
-            case Surface.ROTATION_180:
-                return 180;
-            case Surface.ROTATION_270:
-                return 270;
-        }
-        return 0;
-    }
-
     /**
      * 计算适合的预览分辨率
      */
@@ -175,10 +127,10 @@ public class CameraHelper {
         String[] split = screen.split("---");
         int widthp = Integer.parseInt(split[0]);
         int heightp = Integer.parseInt(split[1]);
-        if(widthp > heightp){
-            proportion = (float)widthp/heightp;
-        }else{
-            proportion = (float)heightp/widthp;
+        if (widthp > heightp) {
+            proportion = (float) widthp / heightp;
+        } else {
+            proportion = (float) heightp / widthp;
         }
         float q = 0.f;
         float c = 1.f;
@@ -236,10 +188,10 @@ public class CameraHelper {
         String[] split = screen.split("---");
         int widthp = Integer.parseInt(split[0]);
         int heightp = Integer.parseInt(split[1]);
-        if(widthp > heightp){
-            proportion = (float)widthp/heightp;
-        }else{
-            proportion = (float)heightp/widthp;
+        if (widthp > heightp) {
+            proportion = (float) widthp / heightp;
+        } else {
+            proportion = (float) heightp / widthp;
         }
         float q = 0.f;
         float c = 1.f;
@@ -290,7 +242,53 @@ public class CameraHelper {
     }
 
     /**
+     * 旋转摄像头方向
+     *
+     * @param activity
+     * @param cameraId
+     * @param camera
+     */
+    private void setCameraDisplayOrientation(Activity activity, int cameraId, Camera camera) {
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        Camera.getCameraInfo(cameraId, info);
+        int degrees = getDisplayRotation(activity);
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360;
+        } else { // back-facing
+            result = (info.orientation - degrees + 360) % 360;
+        }
+        camera.setDisplayOrientation(result);
+    }
+
+    /**
+     * 获得摄像头方向
+     *
+     * @param activity
+     * @return
+     */
+    private int getDisplayRotation(Activity activity) {
+        int rotation = activity.getWindowManager().getDefaultDisplay()
+                .getRotation();
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                return 0;
+            case Surface.ROTATION_90:
+                return 90;
+            case Surface.ROTATION_180:
+                return 180;
+            case Surface.ROTATION_270:
+                return 270;
+            default:
+                break;
+        }
+        return 0;
+    }
+
+    /**
      * 拍照
+     *
      * @param mTakeSuccess
      * @return
      */
@@ -298,34 +296,31 @@ public class CameraHelper {
         final Camera.Parameters cameraParams = mCamera.getParameters();
         cameraParams.setPictureFormat(ImageFormat.JPEG);
 
-        if(current_camrea == CAMERA_BACK){
+        if (current_camrea == CAMERA_BACK) {
             cameraParams.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
             cameraParams.setRotation(90);
-        }else {
+        } else {
             cameraParams.setRotation(270);
         }
         mCamera.setParameters(cameraParams);
-        mCamera.takePicture(null, null, new Camera.PictureCallback() {
-            @Override
-            public void onPictureTaken(byte[] data, Camera camera) {
-                Bitmap cameraBitmap = CUtilts.getInstance().Bytes2Bitmap(data);
-                //防止三星等机型造成的照片方向不对
-                if(cameraBitmap.getWidth() > cameraBitmap.getHeight()) {
-                    if(checkCameraIsFront()){
-                        cameraBitmap = CUtilts.getInstance().rotaingImageView(270, cameraBitmap);
-                    }else {
-                        cameraBitmap = CUtilts.getInstance().rotaingImageView(90, cameraBitmap);
-                    }
+        mCamera.takePicture(null, null, (data, camera) -> {
+            Bitmap cameraBitmap = CUtilts.getInstance().Bytes2Bitmap(data);
+            //防止三星等机型造成的照片方向不对
+            if (cameraBitmap.getWidth() > cameraBitmap.getHeight()) {
+                if (checkCameraIsFront()) {
+                    cameraBitmap = CUtilts.getInstance().rotaingImageView(270, cameraBitmap);
+                } else {
+                    cameraBitmap = CUtilts.getInstance().rotaingImageView(90, cameraBitmap);
                 }
-                mTakeSuccess.success(cameraBitmap);
-                mCamera.startPreview();
             }
+            mTakeSuccess.success(cameraBitmap);
+            mCamera.startPreview();
         });
         return null;
     }
 
-    public  boolean checkCameraIsFront() {
-       Camera.CameraInfo info = new Camera.CameraInfo();
+    public boolean checkCameraIsFront() {
+        Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(current_camrea, info);
         if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             return true;
@@ -334,11 +329,9 @@ public class CameraHelper {
         }
     }
 
-    public interface takeSuccess{
+    public interface takeSuccess {
         void success(Bitmap mBitmap);
     }
-
-
 
 
 }

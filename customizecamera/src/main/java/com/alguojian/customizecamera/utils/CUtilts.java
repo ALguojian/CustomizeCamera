@@ -11,15 +11,20 @@ import android.os.Environment;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.alguojian.customizecamera.InterFace.PreViewImageViewListener;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
- * Created by Bert on 2017/5/11.
+ * 拍照工具类
+ *
+ * @author alguojian
+ * @date 2018.06.01
  */
-
 public class CUtilts {
 
     private static CUtilts instance;
@@ -33,22 +38,11 @@ public class CUtilts {
     public String getScreen(Context mContext) {
         int x, y;
         WindowManager wm = ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE));
-        Display display = wm.getDefaultDisplay();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            Point screenSize = new Point();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                display.getRealSize(screenSize);
-                x = screenSize.x;
-                y = screenSize.y;
-            } else {
-                display.getSize(screenSize);
-                x = screenSize.x;
-                y = screenSize.y;
-            }
-        } else {
-            x = display.getWidth();
-            y = display.getHeight();
-        }
+        Display display = Objects.requireNonNull(wm).getDefaultDisplay();
+        Point screenSize = new Point();
+        display.getRealSize(screenSize);
+        x = screenSize.x;
+        y = screenSize.y;
         return x + "---" + y;
     }
 
@@ -93,10 +87,9 @@ public class CUtilts {
      * 保存Bitmap
      *
      * @param bm
-     * @param savePath
      * @return
      */
-    public String saveBitmap(Context context, Bitmap bm, String savePath) {
+    public static String saveBitmap(Bitmap bm, PreViewImageViewListener preViewImageViewListener) {
         String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + System.currentTimeMillis() + ".jpg";
 
         File file = new File(filePath);
@@ -109,6 +102,9 @@ public class CUtilts {
             e.printStackTrace();
         }
 
+        if (preViewImageViewListener != null) {
+            preViewImageViewListener.imagePath(file.getPath());
+        }
         System.out.println("----------" + file.getPath());
         return null;
 

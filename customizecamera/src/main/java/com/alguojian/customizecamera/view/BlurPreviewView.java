@@ -12,11 +12,9 @@ import android.view.WindowManager;
 
 
 /**
- * Created by Bert on 2017/11/29.
+ * 用于高斯模糊
  */
-
 public class BlurPreviewView extends android.support.v7.widget.AppCompatImageView {
-
 
     private Bitmap mBitmap;
 

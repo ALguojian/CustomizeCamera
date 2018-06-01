@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">自定义相机</string>
+    <string name="finish_text">完成</string>
+    <string name="take_photo">拍照</string>
+    <string name="please_set_paizi">请将发廊招牌置于框内</string>
+    <string name="take_photo_finish">拍摄成功</string>
 </resources>
