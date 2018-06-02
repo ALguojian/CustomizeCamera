@@ -1,8 +1,7 @@
-package com.alguojian.customizecamera;
+package com.alguojian.customizecamera.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.alguojian.customizecamera.InterFace.PreViewImageViewListener;
+import com.alguojian.customizecamera.R;
 import com.alguojian.customizecamera.view.CameraView;
 import com.bumptech.glide.Glide;
 

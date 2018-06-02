@@ -8,16 +8,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.alguojian.customizecamera.CameraActivity;
+import com.alguojian.customizecamera.InterFace.PreViewImageViewListener;
+import com.alguojian.customizecamera.activity.CameraActivity;
+import com.alguojian.customizecamera.activity.LookPictureActivity;
 import com.bumptech.glide.Glide;
 
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
+
+    private String mString;
+    private PreViewImageViewListener mPreViewImageViewListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,11 +29,18 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        mPreViewImageViewListener = path -> {
+
+            mString = path;
+            Glide.with(MainActivity.this)
+                    .load(path)
+                    .into((ImageView) findViewById(R.id.image));
+        };
+
         findViewById(R.id.takePhoto).setOnClickListener(v ->
 
-                CameraActivity.start(MainActivity.this, path -> Glide.with(MainActivity.this)
-                        .load(path)
-                        .into((ImageView) findViewById(R.id.image))));
+                CameraActivity.start(MainActivity.this, mPreViewImageViewListener)
+        );
 
         findViewById(R.id.searchPhoto).setOnClickListener(v -> {
 
@@ -37,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
             getAlbum.setType("image/*");
             startActivityForResult(getAlbum, 10000);
         });
+
+        findViewById(R.id.image).setOnClickListener(v -> {
+
+            LookPictureActivity.start(MainActivity.this, mPreViewImageViewListener,mString, false);
+        });
+
     }
 
     @Override
