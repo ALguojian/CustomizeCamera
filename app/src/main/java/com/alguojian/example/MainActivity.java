@@ -8,12 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.ImageView;
 
-import com.alguojian.customizecamera.InterFace.PreViewImageViewListener;
-import com.alguojian.customizecamera.activity.CameraActivity;
-import com.alguojian.customizecamera.activity.LookPictureActivity;
+import com.alguojian.customizecamera.StartTakePhoto;
 import com.bumptech.glide.Glide;
 
 import java.io.IOException;
@@ -21,7 +18,6 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
 
     private String mString;
-    private PreViewImageViewListener mPreViewImageViewListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,42 +25,36 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        mPreViewImageViewListener = path -> {
+        findViewById(R.id.dddd).setOnClickListener(v ->
 
-            mString = path;
-            Glide.with(MainActivity.this)
-                    .load(path)
-                    .into((ImageView) findViewById(R.id.image));
-        };
+                StartTakePhoto.startTakePhoto(path -> {
+                    mString = path;
+                    Glide.with(MainActivity.this)
+                            .load(path)
+                            .into((ImageView) findViewById(R.id.image));
 
-        findViewById(R.id.takePhoto).setOnClickListener(v ->
+                }, MainActivity.this));
 
-                CameraActivity.start(MainActivity.this, mPreViewImageViewListener)
-        );
+        findViewById(R.id.image).setOnClickListener(v ->
 
-        findViewById(R.id.searchPhoto).setOnClickListener(v -> {
+                StartTakePhoto.lookPicture(path -> {
+                    mString = path;
+                    Glide.with(MainActivity.this)
+                            .load(path)
+                            .into((ImageView) findViewById(R.id.image));
 
-            Intent getAlbum = new Intent(Intent.ACTION_GET_CONTENT);
-            getAlbum.setType("image/*");
-            startActivityForResult(getAlbum, 10000);
-        });
-
-        findViewById(R.id.image).setOnClickListener(v -> {
-
-            LookPictureActivity.start(MainActivity.this, mPreViewImageViewListener,mString, false);
-        });
-
+                }, mString, true, MainActivity.this));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (resultCode != RESULT_OK) {
+        if (resultCode != StartTakePhoto.REQUEST_CODE) {
             return;
         }
         Bitmap bm;
         ContentResolver resolver = getContentResolver();
-        if (requestCode == 10000) {
+        if (requestCode == StartTakePhoto.REQUEST_CODE) {
             try {
                 Uri originalUri = data.getData();
                 String[] proj = {MediaStore.Images.Media.DATA};

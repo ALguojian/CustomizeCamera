@@ -18,10 +18,17 @@
         android:scaleType="fitXY" />
 
     <Button
-        android:layout_marginLeft="100dp"
         android:id="@+id/searchPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="100dp"
         android:text="打开图库" />
+
+    <Button
+        android:id="@+id/dddd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="300dp"
+        android:text="点击弹框" />
 
 </RelativeLayout>
