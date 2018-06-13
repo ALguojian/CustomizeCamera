@@ -18,7 +18,6 @@ import com.alguojian.customizecamera.activity.LookPictureActivity;
 public class StartTakePhoto {
 
     public static final int REQUEST_CODE = 100;
-    private static Activity mContext;
 
     private static PreViewImageViewListener mPreViewImageViewListener;
 
@@ -29,8 +28,11 @@ public class StartTakePhoto {
      * @param flag 是否已完成提交，只能预览，不能再次重新拍摄默认true，只能预览
      */
     public static void lookPicture(PreViewImageViewListener preViewImageViewListener, String path, boolean flag, Activity activity) {
-        mContext = activity;
-        LookPictureActivity.start(mContext, preViewImageViewListener, path, flag);
+
+        PermissionHelper permissionHelper = new PermissionHelper(activity);
+        permissionHelper.requestPermission(Manifest.permission.CAMERA, () ->
+
+                LookPictureActivity.start(activity, preViewImageViewListener, path, flag));
     }
 
     /**
@@ -39,31 +41,36 @@ public class StartTakePhoto {
      * @param activity
      */
     public static void startTakePhoto(PreViewImageViewListener preViewImageViewListener, Activity activity) {
-        mContext = activity;
         mPreViewImageViewListener = preViewImageViewListener;
 
         new TakePhotoDialog(activity).setOnTakePhotoListener(new TakePhotoDialog.TakePhoto() {
             @Override
             public void takePhoto() {
-                requestForAccess();
+                requestForAccess(activity);
             }
 
             @Override
             public void searchPhoto() {
-                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                activity.startActivityForResult(intent, REQUEST_CODE);
+
+                PermissionHelper permissionHelper = new PermissionHelper(activity);
+                permissionHelper.requestPermission(Manifest.permission.CAMERA, () -> {
+                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    activity.startActivityForResult(intent, REQUEST_CODE);
+                });
             }
         }).show();
     }
 
     /**
      * 申请权限
+     *
+     * @param activity
      */
-    private static void requestForAccess() {
-        PermissionHelper permissionHelper = new PermissionHelper(mContext);
+    private static void requestForAccess(Activity activity) {
+        PermissionHelper permissionHelper = new PermissionHelper(activity);
         permissionHelper.requestPermission(Manifest.permission.CAMERA, () -> {
-            CameraActivity.start(mContext, mPreViewImageViewListener);
-            mContext.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            CameraActivity.start(activity, mPreViewImageViewListener);
+            activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
     }
 
