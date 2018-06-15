@@ -36,11 +36,34 @@ public class StartTakePhoto {
     }
 
     /**
-     * 弹框选择拍照或者打开相册
+     * 直接调用拍照功能
      *
      * @param activity
      */
     public static void startTakePhoto(PreViewImageViewListener preViewImageViewListener, Activity activity) {
+        mPreViewImageViewListener = preViewImageViewListener;
+        requestForAccess(activity);
+    }
+
+    /**
+     * 申请权限
+     *
+     * @param activity
+     */
+    private static void requestForAccess(Activity activity) {
+        PermissionHelper permissionHelper = new PermissionHelper(activity);
+        permissionHelper.requestPermission(Manifest.permission.CAMERA, () -> {
+            CameraActivity.start(activity, mPreViewImageViewListener);
+            activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        });
+    }
+
+    /**
+     * 弹框选择拍照或者打开相册
+     *
+     * @param activity
+     */
+    public static void startTakePhotoAndGallery(PreViewImageViewListener preViewImageViewListener, Activity activity) {
         mPreViewImageViewListener = preViewImageViewListener;
 
         new TakePhotoDialog(activity).setOnTakePhotoListener(new TakePhotoDialog.TakePhoto() {
@@ -60,18 +83,4 @@ public class StartTakePhoto {
             }
         }).show();
     }
-
-    /**
-     * 申请权限
-     *
-     * @param activity
-     */
-    private static void requestForAccess(Activity activity) {
-        PermissionHelper permissionHelper = new PermissionHelper(activity);
-        permissionHelper.requestPermission(Manifest.permission.CAMERA, () -> {
-            CameraActivity.start(activity, mPreViewImageViewListener);
-            activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        });
-    }
-
 }
