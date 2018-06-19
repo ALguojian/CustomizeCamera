@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alguojian.customizecamera.InterFace.PreViewImageViewListener;
 import com.alguojian.customizecamera.R;
+import com.alguojian.imagegesture.view.PhotoView;
 import com.bumptech.glide.Glide;
 
 public class LookPictureActivity extends AppCompatActivity {
@@ -17,7 +17,7 @@ public class LookPictureActivity extends AppCompatActivity {
     private static boolean mflag;
     private static String mStrin;
     private static PreViewImageViewListener sPreViewImageViewListener;
-    private ImageView previewImage;
+    private PhotoView previewImage;
     private TextView takeAgain;
     private TextView finish;
 

@@ -5,11 +5,11 @@
     android:layout_height="match_parent"
     tools:context=".activity.LookPictureActivity">
 
-    <ImageView
+    <com.alguojian.imagegesture.view.PhotoView
         android:id="@+id/previewImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitXY" />
+        android:scaleType="fitCenter" />
 
     <TextView
         android:visibility="gone"
