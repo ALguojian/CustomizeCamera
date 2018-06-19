@@ -104,6 +104,7 @@ public class LookPictureActivity extends AppCompatActivity {
 
     private void initView() {
         previewImage = findViewById(R.id.previewImage);
+        previewImage.enable();
         takeAgain = findViewById(R.id.takeAgain);
         finish = findViewById(R.id.finish);
     }
