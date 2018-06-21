@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ff000000"
     tools:context=".activity.LookPictureActivity">
 
     <com.alguojian.imagegesture.view.PhotoView
@@ -12,7 +13,6 @@
         android:scaleType="fitCenter" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/takeAgain"
         android:layout_width="279dp"
         android:layout_height="44dp"
@@ -22,7 +22,8 @@
         android:clickable="true"
         android:gravity="center"
         android:text="重新拍摄"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/finish"

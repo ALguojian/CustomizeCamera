@@ -2,19 +2,17 @@ package com.alguojian.customizecamera.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alguojian.customizecamera.InterFace.PreViewImageViewListener;
 import com.alguojian.customizecamera.R;
-import com.alguojian.imagegesture.ImageGesture;
 import com.alguojian.imagegesture.view.PhotoView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -52,6 +50,7 @@ public class LookPictureActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_look_picture);
         initView();
 
@@ -67,7 +66,7 @@ public class LookPictureActivity extends AppCompatActivity {
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
 
                 loadingDialog.dismiss();
-                Toast.makeText(LookPictureActivity.this,"加载失败",Toast.LENGTH_SHORT).show();
+                Toast.makeText(LookPictureActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
 
                 return false;
             }
