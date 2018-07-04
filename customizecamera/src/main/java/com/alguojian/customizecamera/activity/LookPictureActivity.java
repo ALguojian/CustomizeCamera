@@ -11,8 +11,10 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alguojian.aldialog.dialog.LoadingDialog;
 import com.alguojian.customizecamera.InterFace.PreViewImageViewListener;
 import com.alguojian.customizecamera.R;
+import com.alguojian.imagegesture.ImageGesture;
 import com.alguojian.imagegesture.view.PhotoView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -22,7 +24,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.guojian.aldialog.dialog.LoadingDialog;
 
 public class LookPictureActivity extends AppCompatActivity {
 
